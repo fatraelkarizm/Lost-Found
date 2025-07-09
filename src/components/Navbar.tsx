@@ -27,7 +27,7 @@ const Navbar = () => {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center">
-              <span className="text-xl font-bold text-gray-900 hover:text-[#1d4ed8]">Lost&Found</span>
+              <span className="text-xl font-bold text-[#1d4ed8]">Lost&Found</span>
             </Link>
           </div>
 
@@ -100,25 +100,25 @@ const Navbar = () => {
               <div className="flex flex-col space-y-2">
                 <button 
                   onClick={() => scrollToSection('home')}
-                  className="text-gray-700 hover:text-[##1d4ed8]-600 font-medium py-2 text-left"
+                  className="text-gray-700 hover:text-[#1d4ed8]-600 font-medium py-2 text-left"
                 >
                   Home
                 </button>
                 <button 
                   onClick={() => scrollToSection('browse-items')}
-                  className="text-gray-700 hover:text-[##1d4ed8]-600 font-medium py-2 text-left"
+                  className="text-gray-700 hover:text-[#1d4ed8]-600 font-medium py-2 text-left"
                 >
                   Browse Items
                 </button>
                 <button 
                   onClick={() => scrollToSection('how-it-works')}
-                  className="text-gray-700 hover:text-[##1d4ed8]-600 font-medium py-2 text-left"
+                  className="text-gray-700 hover:text-[#1d4ed8]-600 font-medium py-2 text-left"
                 >
                   How It Works
                 </button>
                 <button 
                   onClick={() => scrollToSection('success-stories')}
-                  className="text-gray-700 hover:text-[##1d4ed8]-600 font-medium py-2 text-left"
+                  className="text-gray-700 hover:text-[#1d4ed8]-600 font-medium py-2 text-left"
                 >
                   Success Stories
                 </button>
@@ -132,7 +132,7 @@ const Navbar = () => {
                   </Button>
                 </Link>
                 <Link to="/register">
-                  <Button variant="outline" className="justify-start border-primary-600 text-[##1d4ed8]-600 w-full">
+                  <Button variant="outline" className="justify-start border-primary-600 text-[#1d4ed8]-600 w-full">
                     Register
                   </Button>
                 </Link>
