@@ -180,7 +180,7 @@ const SearchFilters = () => {
 
             {/* Search Button */}
             <Button 
-              className="w-full h-12 bg-primary-600 hover:bg-primary-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+              className="w-full h-12 bg-primary-600 hover:bg-primary-700 text-blue font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <Search className="w-5 h-5 mr-2" />
               Search Items
@@ -200,6 +200,7 @@ const SearchFilters = () => {
                 <p className="text-gray-600 max-w-md mx-auto">
                   Use the filters on the left to find specific items, or browse through our featured items below
                 </p>
+                {/* Optional */}
                 <div className="mt-4 text-sm text-gray-500">
                   <Calendar className="w-4 h-4 inline mr-1" />
                   Database updated: 2 hours ago
