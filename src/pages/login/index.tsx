@@ -1,14 +1,15 @@
-import React from 'react';
+import React from "react";
 // Link from 'react-router-dom' is not available in this environment, using a simple anchor tag for demonstration.
 // In a real application, you would use React Router's Link.
 // import { Link } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, Search, Compass } from 'lucide-react'; // Updated icons for Lost&Found context
+import { Eye, EyeOff, Mail, Lock, Search, Compass } from "lucide-react"; // Updated icons for Lost&Found context
+import { Link } from "react-router-dom";
 
 // Define types for component props to resolve 'implicitly has an any type' errors
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   className?: string;
-  variant?: 'outline' | 'ghost' | 'default'; // Explicitly define allowed variants
+  variant?: "outline" | "ghost" | "default"; // Explicitly define allowed variants
 }
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -37,7 +38,8 @@ interface CardTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
   className?: string;
 }
 
-interface CardDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {
+interface CardDescriptionProps
+  extends React.HTMLAttributes<HTMLParagraphElement> {
   children: React.ReactNode;
   className?: string;
 }
@@ -47,78 +49,165 @@ interface CardContentProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
-
 // Placeholder for shadcn/ui components with explicit types
-const Button: React.FC<ButtonProps> = ({ children, className = '', variant, ...props }) => {
-  let baseClasses = 'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
-  if (variant === 'outline') {
-    baseClasses += ' border border-input bg-background hover:bg-accent hover:text-accent-foreground';
-  } else if (variant === 'ghost') {
-    baseClasses += ' hover:bg-accent hover:text-accent-foreground';
+const Button: React.FC<ButtonProps> = ({
+  children,
+  className = "",
+  variant,
+  ...props
+}) => {
+  let baseClasses =
+    "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none";
+  if (variant === "outline") {
+    baseClasses +=
+      " border border-input bg-background hover:bg-accent hover:text-accent-foreground";
+  } else if (variant === "ghost") {
+    baseClasses += " hover:bg-accent hover:text-accent-foreground";
   } else {
-    baseClasses += ' bg-primary text-primary-foreground shadow hover:bg-primary/90';
+    baseClasses +=
+      " bg-primary text-primary-foreground shadow hover:bg-primary/90";
   }
-  return <button className={`${baseClasses} ${className}`} {...props}>{children}</button>;
+  return (
+    <button className={`${baseClasses} ${className}`} {...props}>
+      {children}
+    </button>
+  );
 };
 
-const Input: React.FC<InputProps> = ({ className = '', type = 'text', ...props }) => {
-  return <input type={type} className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`} {...props} />;
+const Input: React.FC<InputProps> = ({
+  className = "",
+  type = "text",
+  ...props
+}) => {
+  return (
+    <input
+      type={type}
+      className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      {...props}
+    />
+  );
 };
 
-const Label: React.FC<LabelProps> = ({ children, htmlFor, className = '', ...props }) => {
-  return <label htmlFor={htmlFor} className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${className}`} {...props}>{children}</label>;
+const Label: React.FC<LabelProps> = ({
+  children,
+  htmlFor,
+  className = "",
+  ...props
+}) => {
+  return (
+    <label
+      htmlFor={htmlFor}
+      className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${className}`}
+      {...props}
+    >
+      {children}
+    </label>
+  );
 };
 
-const Card: React.FC<CardProps> = ({ children, className = '', ...props }) => {
-  return <div className={`rounded-lg border bg-card text-card-foreground shadow-sm ${className}`} {...props}>{children}</div>;
+const Card: React.FC<CardProps> = ({ children, className = "", ...props }) => {
+  return (
+    <div
+      className={`rounded-lg border bg-card text-card-foreground shadow-sm ${className}`}
+      {...props}
+    >
+      {children}
+    </div>
+  );
 };
 
-const CardHeader: React.FC<CardHeaderProps> = ({ children, className = '', ...props }) => {
-  return <div className={`flex flex-col space-y-1.5 p-6 ${className}`} {...props}>{children}</div>;
+const CardHeader: React.FC<CardHeaderProps> = ({
+  children,
+  className = "",
+  ...props
+}) => {
+  return (
+    <div className={`flex flex-col space-y-1.5 p-6 ${className}`} {...props}>
+      {children}
+    </div>
+  );
 };
 
-const CardTitle: React.FC<CardTitleProps> = ({ children, className = '', ...props }) => {
-  return <h3 className={`text-2xl font-semibold leading-none tracking-tight ${className}`} {...props}>{children}</h3>;
+const CardTitle: React.FC<CardTitleProps> = ({
+  children,
+  className = "",
+  ...props
+}) => {
+  return (
+    <h3
+      className={`text-2xl font-semibold leading-none tracking-tight ${className}`}
+      {...props}
+    >
+      {children}
+    </h3>
+  );
 };
 
-const CardDescription: React.FC<CardDescriptionProps> = ({ children, className = '', ...props }) => {
-  return <p className={`text-sm text-muted-foreground ${className}`} {...props}>{children}</p>;
+const CardDescription: React.FC<CardDescriptionProps> = ({
+  children,
+  className = "",
+  ...props
+}) => {
+  return (
+    <p className={`text-sm text-muted-foreground ${className}`} {...props}>
+      {children}
+    </p>
+  );
 };
 
-const CardContent: React.FC<CardContentProps> = ({ children, className = '', ...props }) => {
-  return <div className={`p-6 pt-0 ${className}`} {...props}>{children}</div>;
+const CardContent: React.FC<CardContentProps> = ({
+  children,
+  className = "",
+  ...props
+}) => {
+  return (
+    <div className={`p-6 pt-0 ${className}`} {...props}>
+      {children}
+    </div>
+  );
 };
 
 const App = () => {
   const [showPassword, setShowPassword] = React.useState(false);
   const [formData, setFormData] = React.useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => { // Added type for event
+  const handleSubmit = (e: React.FormEvent) => {
+    // Added type for event
     e.preventDefault();
-    console.log('Login attempt:', formData);
+    console.log("Login attempt:", formData);
     // Di sini Anda biasanya akan menangani logika login, misalnya, mengirim data ke backend
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => { // Added type for event
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Added type for event
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 font-sans flex items-center justify-center"> {/* Centering the content */}
-      <div className="max-w-5xl w-full bg-white shadow-lg rounded-lg overflow-hidden flex flex-col lg:flex-row"> {/* Added max-w-5xl, w-full, shadow, rounded, and overflow-hidden */}
+    <div className="min-h-screen bg-gray-100 font-sans flex items-center justify-center">
+      {" "}
+      {/* Centering the content */}
+      <div className="max-w-5xl w-full bg-white shadow-lg rounded-lg overflow-hidden flex flex-col lg:flex-row">
+        {" "}
+        {/* Added max-w-5xl, w-full, shadow, rounded, and overflow-hidden */}
         {/* Left Section - Form */}
         <div className="lg:w-1/2 flex flex-col justify-center p-8">
           {/* Logo Lost&Found */}
           <div className="mb-12">
             <div className="flex items-center">
-              <Search className="h-6 w-6 text-[#1e40af] mr-2" /> {/* Icon for Lost&Found */}
-              <span className="text-[#1e40af] font-bold text-xl">Lost&Found</span>
+              <Link to={"/"} className="flex items-center">
+                <Search className="h-6 w-6 text-[#1e40af] mr-2" />{" "}
+                {/* Icon for Lost&Found */}
+                <span className="text-[#1e40af] font-bold text-xl">
+                  Lost&Found
+                </span>
+              </Link>
             </div>
           </div>
 
@@ -126,9 +215,12 @@ const App = () => {
             {/* Using Card components directly */}
             <Card className="rounded-xl shadow-lg border-none">
               <CardHeader className="text-center">
-                <CardTitle className="text-3xl font-bold text-gray-900">Welcome Back!</CardTitle>
+                <CardTitle className="text-3xl font-bold text-gray-900">
+                  Welcome Back!
+                </CardTitle>
                 <CardDescription className="text-gray-600">
-                  Sign in to access your dashboard and continue optimizing your Lost&Found experience.
+                  Sign in to access your dashboard and continue optimizing your
+                  Lost&Found experience.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -156,7 +248,7 @@ const App = () => {
                       <Input
                         id="password"
                         name="password"
-                        type={showPassword ? 'text' : 'password'}
+                        type={showPassword ? "text" : "password"}
                         required
                         value={formData.password}
                         onChange={handleInputChange}
@@ -179,12 +271,18 @@ const App = () => {
                   </div>
 
                   <div className="text-right text-sm">
-                    <a href="#" className="font-medium text-[#1e40af] hover:text-[#1d4ed8]">
+                    <a
+                      href="#"
+                      className="font-medium text-[#1e40af] hover:text-[#1d4ed8]"
+                    >
                       Forgot Password?
                     </a>
                   </div>
 
-                  <Button type="submit" className="w-full bg-[#0A192F] hover:bg-[#1d4ed8] text-white rounded-md py-2 px-4 transition duration-300 ease-in-out shadow-md">
+                  <Button
+                    type="submit"
+                    className="w-full bg-[#0A192F] hover:bg-[#1d4ed8] text-white rounded-md py-2 px-4 transition duration-300 ease-in-out shadow-md"
+                  >
                     Sign In
                   </Button>
                 </form>
@@ -200,16 +298,26 @@ const App = () => {
                   </div>
 
                   <div className="space-y-3">
-                    <Button variant="outline" className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 flex items-center justify-center rounded-md py-2 px-4 transition duration-300 ease-in-out shadow-sm">
-                      <img src="https://www.google.com/favicon.ico" alt="Google icon" className="w-5 h-5 mr-2" />
+                    <Button
+                      variant="outline"
+                      className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 flex items-center justify-center rounded-md py-2 px-4 transition duration-300 ease-in-out shadow-sm"
+                    >
+                      <img
+                        src="https://www.google.com/favicon.ico"
+                        alt="Google icon"
+                        className="w-5 h-5 mr-2"
+                      />
                       Continue with Google
                     </Button>
                   </div>
 
                   <p className="mt-6 text-sm text-gray-600">
-                    Don't have an Account?{' '}
+                    Don't have an Account?{" "}
                     {/* Using an anchor tag instead of Link for broader compatibility */}
-                    <a href="/signup" className="font-medium text-[#1e40af] hover:text-[#1d4ed8]">
+                    <a
+                      href="/register"
+                      className="font-medium text-[#1e40af] hover:text-[#1d4ed8]"
+                    >
                       Sign Up
                     </a>
                   </p>
@@ -218,21 +326,26 @@ const App = () => {
             </Card>
           </div>
         </div>
-
         {/* Right Section - Promotional Content */}
         <div className="lg:w-1/2 bg-[#0A192F] text-white p-8 flex flex-col justify-center relative overflow-hidden">
           {/* Background pattern/gradient - Meniru gambar */}
-          <div className="absolute inset-0 z-0" style={{
-            // Enhanced radial gradient for a more prominent effect
-            background: 'radial-gradient(circle at top left, rgba(30, 64, 175, 0.5), transparent 50%), radial-gradient(circle at bottom right, rgba(29, 78, 216, 0.5), transparent 50%)'
-          }}></div>
+          <div
+            className="absolute inset-0 z-0"
+            style={{
+              // Enhanced radial gradient for a more prominent effect
+              background:
+                "radial-gradient(circle at top left, rgba(30, 64, 175, 0.5), transparent 50%), radial-gradient(circle at bottom right, rgba(29, 78, 216, 0.5), transparent 50%)",
+            }}
+          ></div>
 
           <div className="relative z-10 text-center lg:text-left">
             <h1 className="text-4xl font-bold mb-6 leading-tight">
               Temukan Kembali Barang Berharga Anda dengan Mudah
             </h1>
             <blockquote className="text-lg italic mb-8 text-gray-300 border-l-4 border-blue-400 pl-4">
-              "Lost&Found telah sepenuhnya mengubah cara saya menemukan barang hilang. Ini cepat, efisien, dan memastikan barang-barang saya selalu kembali dengan aman."
+              "Lost&Found telah sepenuhnya mengubah cara saya menemukan barang
+              hilang. Ini cepat, efisien, dan memastikan barang-barang saya
+              selalu kembali dengan aman."
             </blockquote>
             <div className="flex items-center justify-center lg:justify-start mb-12">
               <img
@@ -242,15 +355,21 @@ const App = () => {
               />
               <div>
                 <p className="font-semibold text-white">Michael Carter</p>
-                <p className="text-sm text-gray-300">Pengguna Setia Lost&Found</p>
+                <p className="text-sm text-gray-300">
+                  Pengguna Setia Lost&Found
+                </p>
               </div>
             </div>
 
             <div className="mt-12">
-              <h3 className="text-lg font-semibold text-gray-300 mb-4">Bergabunglah dengan Komunitas Kami</h3>
+              <h3 className="text-lg font-semibold text-gray-300 mb-4">
+                Bergabunglah dengan Komunitas Kami
+              </h3>
               <div className="flex flex-wrap justify-center lg:justify-start gap-4">
                 {/* Placeholder for community logos/icons */}
-                <span className="text-gray-400 text-sm">Aplikasi ini membantu ribuan pengguna setiap hari!</span>
+                <span className="text-gray-400 text-sm">
+                  Aplikasi ini membantu ribuan pengguna setiap hari!
+                </span>
                 {/* You could add actual icons/logos here if needed */}
                 <Compass className="h-6 w-6 text-white" />
                 <Search className="h-6 w-6 text-white" />

@@ -8,7 +8,7 @@ const SuccessStories = () => {
       name: "Sarah Chen",
       location: "Toronto, ON",
       item: "Wedding Ring",
-      image: "https://images.unsplash.com/photo-1494790108755-2616c28ca96b?w=150&h=150&fit=crop&crop=face",
+      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
       story: "I lost my grandmother's wedding ring at the park. Within 24 hours, someone found it and posted it here. I'm so grateful for this amazing community!",
       timeAgo: "2 weeks ago",
       rating: 5
@@ -45,7 +45,7 @@ const SuccessStories = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 md:justify-center  lg:grid-cols-3 gap-8">
           {stories.map((story) => (
             <div key={story.id} className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6">
               <div className="flex items-center mb-4">
@@ -73,7 +73,7 @@ const SuccessStories = () => {
               </div>
 
               <div className="relative">
-                <Quote className="absolute -top-2 -left-1 w-8 h-8 text-gray-200" />
+                <Quote className="absolute -top-2 -left-1 w-5 h-5 text-gray-200" />
                 <p className="text-gray-700 italic pl-6 mb-4">"{story.story}"</p>
               </div>
 
