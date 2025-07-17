@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapPin, Clock, Heart, ExternalLink } from "lucide-react";
+import { MapPin, Clock, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import ItemModal from "./ItemModal";
@@ -131,9 +131,6 @@ const FeaturedItems = () => {
                     </Badge>
                   )}
                 </div>
-                <button className="absolute top-4 right-4 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-red-50 transition-colors">
-                  <Heart className="w-4 h-4 text-gray-400 hover:text-red-500" />
-                </button>
               </div>
 
               {/* Content */}
