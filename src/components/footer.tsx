@@ -1,4 +1,4 @@
-import { Heart, MapPin, Mail, Phone } from 'lucide-react';
+import { MapPin, Mail, Phone } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -14,10 +14,6 @@ const Footer = () => {
               Connecting communities to reunite people with their lost belongings. 
               Every item has a story, and we help complete that story.
             </p>
-            <div className="flex items-center text-gray-300">
-              <Heart className="w-4 h-4 mr-2 text-red-400" />
-              <span className="text-sm">Made with love for our community</span>
-            </div>
           </div>
 
           {/* Quick Links */}

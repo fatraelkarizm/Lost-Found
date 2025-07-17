@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
+import type { RootState } from '../store';
 
 // Define the Category type based on your API response
 export interface Category {
@@ -24,11 +25,13 @@ const initialState: CategoriesState = {
 // Async thunk to fetch categories from the API
 export const fetchCategories = createAsyncThunk(
   'categories/fetchCategories',
-  async (token: string, { rejectWithValue }) => {
+  // Note: If your API requires authentication, you can pass the token as an argument token: string
+  
+  async (_, { rejectWithValue }) => {
     try {
       const response = await fetch('http://localhost:8889/api/category', {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          // 'Authorization': `Bearer ${token}`,
         },
       });
 
@@ -64,5 +67,9 @@ const categoriesSlice = createSlice({
       });
   },
 });
+
+export const selectCategories = (state: RootState) => state.categories.categories;
+export const selectCategoriesStatus = (state: RootState) => state.categories.status;
+export const selectCategoriesError = (state: RootState) => state.categories.error;
 
 export default categoriesSlice.reducer;

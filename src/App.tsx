@@ -1,10 +1,17 @@
 import React from 'react'
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route} from "react-router-dom";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-const queryClient = new QueryClient();
+import { Toaster as Sonner, TooltipProvider } from "@/components/ui";
 
+// Auth and Redux Logic, will be used later
+
+// import { useDispatch } from 'react-redux';
+// import type { RootState } from '@/redux/store'; 
+// import type { User, loginWithGoogle } from '@/redux/user/userSlice'; 
+
+
+
+const queryClient = new QueryClient();
 import {
   Landing,
   Login,

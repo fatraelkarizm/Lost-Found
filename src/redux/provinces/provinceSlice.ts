@@ -22,11 +22,12 @@ const initialState: ProvincesState = {
 
 export const fetchProvinces = createAsyncThunk(
      "provinces/fetchProvinces",
-     async (token: string, { rejectWithValue }) => {
+     // Note: If your API requires authentication, you can pass the token as an argument token: string
+     async (_, { rejectWithValue }) => {
           try {
                const response = await fetch("http://localhost:8889/api/province", {
                     headers: {
-                         "Authorization": `Bearer ${token}`,
+                         // "Authorization": `Bearer ${token}`,
                     },
                });
 
@@ -61,5 +62,9 @@ const provincesSlice = createSlice({
                });
      }
 });
+
+export const selectProvinces = (state: { provinces: ProvincesState }) => state.provinces.provinces;
+export const selectProvincesStatus = (state: { provinces: ProvincesState }) => state.provinces.status;
+export const selectProvincesError = (state: { provinces: ProvincesState }) => state.provinces.error;
 
 export default provincesSlice.reducer;

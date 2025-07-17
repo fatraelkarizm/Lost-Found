@@ -1,83 +1,137 @@
-// userSlice.ts
+// src/redux/userProfile/userProfileSlice.ts
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
+import type { RootState } from '@/redux/store';
 
-// Define the User interface based on your API documentation
-export interface User {
-  id: string;
-  email: string;
-  name: string | null;
-  username: string | null;
-  photoprofile: string | null;
-  isAdmin: boolean;
-  token: string;
-  city?: string | null;
-  province?: string | null;
+export interface UserProfile {
+    id: string;
+    email: string;
+    name: string | null;
+    username: string | null;
+    photoprofile: string | null;
+    isAdmin: boolean;
+    city?: string | null;
+    province?: string | null;
 }
 
-// Define the initial state for the user slice
-interface UserState {
-  user: User | null;
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
-  error: string | null;
+interface UserProfileState {
+    profile: UserProfile | null;
+    status: 'idle' | 'loading' | 'succeeded' | 'failed';
+    error: string | null;
 }
 
-const initialState: UserState = {
-  user: null,
-  status: 'idle',
-  error: null,
+const initialState: UserProfileState = {
+    profile: null,
+    status: 'idle',
+    error: null,
 };
 
-// Async thunk for Google login/signup
-// This will call your /api/login endpoint
-export const loginWithGoogle = createAsyncThunk(
-  'user/loginWithGoogle',
-  async (id_token: string, { rejectWithValue }) => {
-    try {
-      const response = await axios.post('http://localhost:8889/api/login', { id_token }); //
-      // Assuming your API returns the user object and token directly under 'data'
-      return response.data.data as User; //
-    } catch (error: any) {
-      if (axios.isAxiosError(error)) {
-        return rejectWithValue(error.response?.data?.errors || 'Failed to login with Google'); //
-      }
-      return rejectWithValue('An unexpected error occurred');
+// Async thunk untuk mengambil data profil user
+export const fetchUserProfile = createAsyncThunk(
+    'userProfile/fetchUserProfile',
+    async (userId: string, { getState, rejectWithValue }) => {
+        const state = getState() as RootState;
+        const authToken = state.auth.token; 
+
+        if (!authToken) {
+            return rejectWithValue('No authentication token found.');
+        }
+
+        try {
+            const response = await axios.get(`http://localhost:8889/api/user/${userId}`, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            });
+            return response.data.data as UserProfile; // Asumsi API mengembalikan UserProfile
+        } catch (error: any) {
+            if (axios.isAxiosError(error)) {
+                return rejectWithValue(error.response?.data?.errors || 'Failed to fetch user profile');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
     }
-  }
 );
 
-const userSlice = createSlice({
-  name: 'user',
-  initialState,
-  reducers: {
-    // You might want a logout action
-    logout: (state) => {
-      state.user = null;
-      state.status = 'idle';
-      state.error = null;
-      // Clear token from localStorage as well
-      localStorage.removeItem('userToken');
+// Async thunk untuk memperbarui data profil user
+export const updateUserProfile = createAsyncThunk(
+    'userProfile/updateUserProfile',
+    async (updateData: Partial<UserProfile> & { userId: string }, { getState, rejectWithValue }) => {
+        const state = getState() as RootState;
+        const authToken = state.auth.token;
+        const { userId, ...dataToUpdate } = updateData;
+
+        if (!authToken) {
+            return rejectWithValue('No authentication token found.');
+        }
+
+        try {
+            const response = await axios.patch(`http://localhost:8889/api/user/${userId}`, dataToUpdate, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            });
+            return response.data.data as UserProfile;
+        } catch (error: any) {
+            if (axios.isAxiosError(error)) {
+                return rejectWithValue(error.response?.data?.errors || 'Failed to update user profile');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
+
+const userProfileSlice = createSlice({
+    name: 'userProfile',
+    initialState,
+    reducers: {
+        clearUserProfile: (state) => {
+            state.profile = null;
+            state.status = 'idle';
+            state.error = null;
+        },
+        setProfile: (state, action: PayloadAction<UserProfile>) => {
+            state.profile = action.payload;
+            state.status = 'succeeded';
+        }
     },
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(loginWithGoogle.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(loginWithGoogle.fulfilled, (state, action: PayloadAction<User>) => {
-        state.status = 'succeeded';
-        state.user = action.payload;
-        // Store the token in localStorage
-        localStorage.setItem('userToken', action.payload.token); //
-      })
-      .addCase(loginWithGoogle.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload as string;
-        state.user = null;
-      });
-  },
+    extraReducers: (builder) => {
+        builder
+            // Handle fetching user profile
+            .addCase(fetchUserProfile.pending, (state) => {
+                state.status = 'loading';
+                state.error = null;
+            })
+            .addCase(fetchUserProfile.fulfilled, (state, action: PayloadAction<UserProfile>) => {
+                state.status = 'succeeded';
+                state.profile = action.payload;
+            })
+            .addCase(fetchUserProfile.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = (action.payload as string) || action.error.message || 'Failed to load user profile';
+                state.profile = null;
+            })
+            // Handle updating user profile
+            .addCase(updateUserProfile.pending, (state) => {
+                state.status = 'loading';
+                state.error = null;
+            })
+            .addCase(updateUserProfile.fulfilled, (state, action: PayloadAction<UserProfile>) => {
+                state.status = 'succeeded';
+                state.profile = action.payload; // Perbarui profil dengan data terbaru
+            })
+            .addCase(updateUserProfile.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = (action.payload as string) || action.error.message || 'Failed to update user profile';
+            });
+    },
 });
 
-export const { logout } = userSlice.actions;
+export const { clearUserProfile, setProfile } = userProfileSlice.actions;
 
-export default userSlice.reducer;
+export const selectUserProfile = (state: RootState) => state.user.profile;
+export const selectUserProfileStatus = (state: RootState) => state.user.status;
+export const selectUserProfileError = (state: RootState) => state.user.error;
+
+export default userProfileSlice.reducer;

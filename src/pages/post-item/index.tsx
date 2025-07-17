@@ -19,7 +19,7 @@ const PostItem = () => {
   const { categories, status, error } = useSelector((state: RootState) => state.categories);
   const { provinces } = useSelector((state: RootState) => state.provinces);
   const { images, formData, setFormData, handleImageUpload, removeImage, handleInputChange, handleSubmit } = usePostForm();
-  const authToken = ''; 
+  const authToken: string | undefined = undefined;
 
   React.useEffect(() => {
     if (status === 'idle') {
