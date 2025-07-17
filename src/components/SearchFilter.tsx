@@ -269,7 +269,7 @@ const SearchFilters = () => {
                   placeholder="Search items..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-11 h-12 bg-white border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                  className="pl-11 h-12 bg-white border-gray-200 focus:border-primary focus:ring-primary"
                 />
               </div>
             </div>
@@ -289,7 +289,7 @@ const SearchFilters = () => {
                     <input
                       type="checkbox"
                       id="mostRelevant"
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-gray-300 text-blue-600 focus:ring-primary"
                       checked={isUrgent}
                       onChange={handleUrgentChange}
                     />
@@ -299,7 +299,7 @@ const SearchFilters = () => {
                     <input
                       type="checkbox"
                       id="recentlyAdded"
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-gray-300 text-blue-600 focus:ring-primary"
                       checked={isRecentlyAdded}
                       onChange={handleRecentlyAddedChange}
                     />
@@ -330,7 +330,7 @@ const SearchFilters = () => {
                           className={`
                             p-2 rounded-md border cursor-pointer
                             ${selectedCategoryId === category.id
-                              ? 'bg-blue-100 border-blue-500 text-blue-700'
+                              ? 'bg-blue-100 border-primary text-blue-700'
                               : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-100'
                             }
                             flex items-center justify-between
@@ -437,7 +437,7 @@ const SearchFilters = () => {
                       type="radio"
                       name="time"
                       id="today"
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-gray-300 text-blue-600 focus:ring-primary"
                       checked={selectedTimeFilter === 'today'}
                       onChange={() => handleTimeFilterChange('today')}
                     />
@@ -448,7 +448,7 @@ const SearchFilters = () => {
                       type="radio"
                       name="time"
                       id="week"
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-gray-300 text-blue-600 focus:ring-primary"
                       checked={selectedTimeFilter === 'week'}
                       onChange={() => handleTimeFilterChange('week')}
                     />
@@ -459,7 +459,7 @@ const SearchFilters = () => {
                       type="radio"
                       name="time"
                       id="month"
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-gray-300 text-blue-600 focus:ring-primary"
                       checked={selectedTimeFilter === 'month'}
                       onChange={() => handleTimeFilterChange('month')}
                     />
@@ -470,7 +470,7 @@ const SearchFilters = () => {
                       type="radio"
                       name="time"
                       id="all"
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-gray-300 text-blue-600 focus:ring-primary"
                       checked={selectedTimeFilter === 'all'}
                       onChange={() => handleTimeFilterChange('all')}
                     />
@@ -482,7 +482,7 @@ const SearchFilters = () => {
 
             {/* Search Button */}
             <Button
-              className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+              className="w-full h-12 bg-primary hover:bg-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
               onClick={handleSearchButtonClick}
             >
               <Search className="w-5 h-5" />
@@ -565,7 +565,7 @@ const SearchFilters = () => {
                           <span>{formatTimeAgo(item.createdAt)}</span>
                         </div>
                         <Button
-                          className="w-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center"
+                          className="w-full bg-primary hover:bg-primary text-white flex items-center justify-center"
                           onClick={(e) => { // Menghentikan event bubbling agar klik tombol tidak menutup modal
                             e.stopPropagation();
                             openItemModal(item);
@@ -582,7 +582,7 @@ const SearchFilters = () => {
               {/* Load More Button for Infinite Scroll */}
               {hasMoreItems && (itemsStatus === 'succeeded' || itemsStatus === 'idle' || (itemsStatus === 'loading' && items.length > 0)) && (
                 <div className="text-center mt-8">
-                  <Button onClick={handleLoadMore} className="bg-blue-500 hover:bg-blue-600 text-white" disabled={itemsStatus === 'loading'}>
+                  <Button onClick={handleLoadMore} className="bg-primary hover:bg-primary text-white" disabled={itemsStatus === 'loading'}>
                     {itemsStatus === 'loading' && items.length > 0 ? (
                         <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Loading...</>
                     ) : (
@@ -599,32 +599,7 @@ const SearchFilters = () => {
       {/* Render ItemModal */}
       {isModalOpen && selectedItem && (
         <ItemModal
-          item={{
-            id: selectedItem.id,
-            title: selectedItem.name,
-            name: selectedItem.name,
-            description: selectedItem.description,
-            category: {
-              name: selectedItem.category.name,
-              slug: selectedItem.category.slug,
-            },
-            address: selectedItem.address,
-            city: {
-              name: selectedItem.city.name,
-              slug: selectedItem.city.slug,
-            },
-            province: {
-              name: selectedItem.province.name,
-              slug: selectedItem.province.slug,
-            },
-            images: selectedItem.images && selectedItem.images.length > 0
-              ? selectedItem.images
-              : [{ id: 'placeholder', url: 'https://via.placeholder.com/400x250?text=No+Image' }],
-            createdAt: selectedItem.createdAt,
-            status: selectedItem.isFound ? 'Found' : 'Lost',
-            isFound: selectedItem.isFound,
-            urgent: false, 
-          }}
+          item={selectedItem}
           isOpen={isModalOpen}
           onClose={closeItemModal}
         />

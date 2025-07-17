@@ -1,18 +1,14 @@
-import { useState } from "react";
-import { MapPin, Clock, ExternalLink } from "lucide-react";
+import { MapPin, Clock} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import ItemModal from "./ItemModal";
 
 // Mengambil data di API nantinya
 const FeaturedItems = () => {
-  const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   //Data Dummy
   const featuredItems = [
     {
-      id: 1,
+      id: 0,
       title: "iPhone 14 Pro - Black",
       category: "Electronics",
       location: "Downtown Toronto, ON",
@@ -87,11 +83,6 @@ const FeaturedItems = () => {
     },
   ];
 
-  const handleItemClick = (item: any) => {
-    setSelectedItem(item);
-    setIsModalOpen(true);
-  };
-
   return (
     <div id="browse-items" className="bg-gray-50 py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -111,7 +102,6 @@ const FeaturedItems = () => {
           {featuredItems.map((item) => (
             <div
               key={item.id}
-              onClick={() => handleItemClick(item)}
               className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group hover:-translate-y-1 cursor-pointer"
             >
               {/* Image */}
@@ -154,18 +144,6 @@ const FeaturedItems = () => {
                   <Clock className="w-4 h-4 mr-1" />
                   <span>{item.timeAgo}</span>
                 </div>
-
-                <Button
-                  className="w-full bg-primary text-white group"
-                  variant="default"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleItemClick(item);
-                  }}
-                >
-                  View Details
-                  <ExternalLink className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
               </div>
             </div>
           ))}
@@ -183,12 +161,6 @@ const FeaturedItems = () => {
         </div>
       </div>
 
-      {/* Item Modal */}
-      <ItemModal
-        item={selectedItem}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
     </div>
   );
 };

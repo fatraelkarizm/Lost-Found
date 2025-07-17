@@ -6,7 +6,8 @@ import provincesReducer from '@/redux/provinces/provinceSlice';
 import authReducer from '@/redux/auth/authSlice'; 
 import imageReducer from '@/redux/image/imageSlice'; 
 import cityReducer from '@/redux/cities/citySlice'; 
-import itemReducer from '@/redux/item/itemSlice'; // Pastikan path ini sesuai dengan lokasi itemSlice Anda
+import itemReducer from '@/redux/item/itemSlice'; 
+import commentsReducer from '@/redux/comments/commentSlice'; // Import commentReducer
 
 export const store = configureStore({
      reducer: {
@@ -16,7 +17,8 @@ export const store = configureStore({
           auth: authReducer, 
           image: imageReducer,
           city: cityReducer, 
-          items: itemReducer, // Tambahkan itemReducer ke dalam store
+          items: itemReducer, 
+          comments: commentsReducer, // Add commentReducer here
           // Add other reducers here if you have them
      },
 });

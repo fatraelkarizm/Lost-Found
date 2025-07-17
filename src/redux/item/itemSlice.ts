@@ -5,9 +5,12 @@ import type { RootState } from '@/redux/store';
 
 // Interface for User data within Item
 interface ItemUser {
+     id: string;
+     email: string;
      name: string;
      username: string | null;
      photoprofile: string | null;
+
 }
 
 // Interface for Category data within Item
@@ -36,6 +39,7 @@ interface ItemImage {
 
 // Interface for Item itself
 export interface Item {
+     [x: string]: any;
      id: string;
      name: string;
      description: string;
