@@ -1,77 +1,33 @@
 import React from 'react';
 import { Upload, Image as ImageIcon, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { Button, Input, Label, Textarea } from '@/components/ui';
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useSelector, useDispatch } from 'react-redux'; // Import hooks
-import type { RootState, AppDispatch } from '@/redux/store'; // Import RootState and AppDispatch
-import { fetchCategories } from '@/redux//categories/categoriesSlice'; // Import the thunk
+
+// Fetch Data
+import { useSelector, useDispatch } from 'react-redux'; 
+import type { RootState, AppDispatch } from '@/redux/store'; 
+import { fetchCategories } from '@/redux/categories/categoriesSlice'; 
+import { fetchProvinces } from '@/redux/provinces/provinceSlice';
+
+import usePostForm from './usePostForm';
+
 
 const PostItem = () => {
   const dispatch: AppDispatch = useDispatch();
   const { categories, status, error } = useSelector((state: RootState) => state.categories);
-
-  const [images, setImages] = React.useState<string[]>([]);
-  const [formData, setFormData] = React.useState({
-    title: '',
-    category: '',
-    description: '',
-    location: '',
-    province: '',
-    city: '',
-    contactMethod: '',
-    contactInfo: '',
-    urgent: false
-  });
-
+  const { provinces } = useSelector((state: RootState) => state.provinces);
+  const { images, formData, setFormData, handleImageUpload, removeImage, handleInputChange, handleSubmit } = usePostForm();
   const authToken = ''; 
 
   React.useEffect(() => {
     if (status === 'idle') {
-      dispatch(fetchCategories(authToken)); // Dispatch the thunk to fetch categories
+      dispatch(fetchCategories(authToken)); 
+      dispatch(fetchProvinces(authToken));
     }
   }, [status, dispatch, authToken]);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-      Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          if (event.target?.result) {
-            setImages(prev => [...prev, event.target!.result as string]);
-          }
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-  };
-
-  const removeImage = (index: number) => {
-    setImages(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Post item:', { ...formData, images });
-  };
-
-  // Static provinces for now, replace with API call if needed
-  const provinces = [
-    'Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 
-    'Newfoundland and Labrador', 'Nova Scotia', 'Ontario', 
-    'Prince Edward Island', 'Quebec', 'Saskatchewan'
-  ];
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
@@ -194,12 +150,14 @@ const PostItem = () => {
                       <SelectValue placeholder="Select province" />
                     </SelectTrigger>
                     <SelectContent>
-                      {provinces.map((province) => (
-                        <SelectItem key={province} value={province}>
-                          {province}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
+                    {status === 'loading' && <SelectItem value="loading-placeholder" disabled>Loading Provinces...</SelectItem>}
+                    {status === 'failed' && <SelectItem value="error-placeholder" disabled>Error: {error}</SelectItem>}
+                    {status === 'succeeded' && provinces.map((province) => (
+                      <SelectItem key={province.id} value={province.id}> 
+                        {province.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                   </Select>
                 </div>
                 <div>

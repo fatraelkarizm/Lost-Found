@@ -1,12 +1,14 @@
 // app/store.ts
 import { configureStore } from '@reduxjs/toolkit';
-import userReducer from '@/redux/user/userSlice'; // Adjust the path as needed
+import userReducer from '@/redux/user/userSlice'; 
 import categoriesReducer from '@/redux/categories/categoriesSlice';
+import provincesReducer from '@/redux/provinces/provinceSlice';
 
 export const store = configureStore({
      reducer: {
           user: userReducer,
-          categories: categoriesReducer, // Add the categories reducer
+          categories: categoriesReducer,
+          provinces: provincesReducer, 
           // Add other reducers here if you have them
      },
 });
