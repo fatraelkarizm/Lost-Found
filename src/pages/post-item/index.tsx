@@ -1,14 +1,19 @@
-
 import React from 'react';
-import { Upload, MapPin, Tag, Calendar, Image as ImageIcon, X } from 'lucide-react';
+import { Upload, Image as ImageIcon, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useSelector, useDispatch } from 'react-redux'; // Import hooks
+import type { RootState, AppDispatch } from '@/redux/store'; // Import RootState and AppDispatch
+import { fetchCategories } from '@/redux//categories/categoriesSlice'; // Import the thunk
 
 const PostItem = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const { categories, status, error } = useSelector((state: RootState) => state.categories);
+
   const [images, setImages] = React.useState<string[]>([]);
   const [formData, setFormData] = React.useState({
     title: '',
@@ -22,16 +27,13 @@ const PostItem = () => {
     urgent: false
   });
 
-  const categories = [
-    'Electronics', 'Keys', 'Jewelry', 'Bags & Wallets', 'Clothing', 
-    'Documents', 'Pet Items', 'Sports Equipment', 'Books', 'Other'
-  ];
+  const authToken = ''; 
 
-  const provinces = [
-    'Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 
-    'Newfoundland and Labrador', 'Nova Scotia', 'Ontario', 
-    'Prince Edward Island', 'Quebec', 'Saskatchewan'
-  ];
+  React.useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchCategories(authToken)); // Dispatch the thunk to fetch categories
+    }
+  }, [status, dispatch, authToken]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -63,6 +65,13 @@ const PostItem = () => {
     e.preventDefault();
     console.log('Post item:', { ...formData, images });
   };
+
+  // Static provinces for now, replace with API call if needed
+  const provinces = [
+    'Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 
+    'Newfoundland and Labrador', 'Nova Scotia', 'Ontario', 
+    'Prince Edward Island', 'Quebec', 'Saskatchewan'
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
@@ -151,9 +160,11 @@ const PostItem = () => {
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categories.map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category}
+                    {status === 'loading' && <SelectItem value="loading-placeholder" disabled>Loading categories...</SelectItem>}
+                    {status === 'failed' && <SelectItem value="error-placeholder" disabled>Error: {error}</SelectItem>}
+                    {status === 'succeeded' && categories.map((category) => (
+                      <SelectItem key={category.id} value={category.id}> {/* Use category.id as value */}
+                        {category.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
