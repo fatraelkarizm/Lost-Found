@@ -7,7 +7,8 @@ import { Badge } from '@/components/ui/badge';
 // Import dari Redux
 import { useDispatch, useSelector } from 'react-redux';
 import { type AppDispatch, type RootState } from '@/redux/store';
-import { selectAuthToken, selectCurrentUser } from '@/redux/user/userSlice';
+import { selectAuthToken } from '@/redux/auth/authSlice';
+import { selectCurrentUser } from '@/redux/user/userSlice';
 
 // Import Comment Slice
 import {

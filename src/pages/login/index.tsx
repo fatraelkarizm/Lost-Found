@@ -1,15 +1,27 @@
-import React from "react";
-// Link from 'react-router-dom' is not available in this environment, using a simple anchor tag for demonstration.
-// In a real application, you would use React Router's Link.
-// import { Link } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, Search, Compass } from "lucide-react"; // Updated icons for Lost&Found context
-import { Link } from "react-router-dom";
+import React, { useState, useEffect, type ChangeEvent } from "react";
+import { Eye, EyeOff, Mail, Lock, Search, Compass, Loader2 } from "lucide-react";
 
-// Define types for component props to resolve 'implicitly has an any type' errors
+// Google Sign-In types
+declare global {
+  interface Window {
+    google: any;
+  }
+}
+import { Link, useNavigate } from "react-router-dom";
+
+// Import dari Redux
+import { useDispatch, useSelector } from 'react-redux';
+import { type AppDispatch, type RootState } from '@/redux/store';
+import {
+  loginWithGoogle, // Import thunk Google login
+  loginWithEmailPassword,
+  setAuthToken} from '@/redux/auth/authSlice';
+
+// Define types for component props
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   className?: string;
-  variant?: "outline" | "ghost" | "default"; // Explicitly define allowed variants
+  variant?: "outline" | "ghost" | "default";
 }
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -49,11 +61,11 @@ interface CardContentProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
-// Placeholder for shadcn/ui components with explicit types
+// Placeholder for shadcn/ui components
 const Button: React.FC<ButtonProps> = ({
   children,
   className = "",
-  variant,
+  variant = "default",
   ...props
 }) => {
   let baseClasses =
@@ -167,22 +179,128 @@ const CardContent: React.FC<CardContentProps> = ({
   );
 };
 
-const App = () => {
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [formData, setFormData] = React.useState({
+const Login = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const authStatus = useSelector((state: RootState) => state.auth.status);
+  const authError = useSelector((state: RootState) => state.auth.error);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const authToken = useSelector((state: RootState) => state.auth.token);
+
+  // State for form data
+  const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
+  // State for Google Sign-In loading
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
+  // Initialize Google Sign-In
+  useEffect(() => {
+    const initializeGoogleSignIn = () => {
+      if (window.google) {
+        // Get Google Client ID from environment or use a fallback
+        const googleClientId = import.meta.env?.VITE_GOOGLE_CLIENT_ID;
+        console.log("Google Client ID being used:", googleClientId); // Tambahkan ini
+        
+        window.google.accounts.id.initialize({
+          client_id: googleClientId,
+          callback: handleGoogleCallback,
+          auto_select: false,
+          cancel_on_tap_outside: true,
+        });
+      }
+    };
+
+    // Load Google Sign-In script if not already loaded
+    if (!window.google) {
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = initializeGoogleSignIn;
+      document.head.appendChild(script);
+    } else {
+      initializeGoogleSignIn();
+    }
+  }, []);
+
+  // Effect untuk memuat token dari localStorage saat aplikasi pertama kali dimuat
+  useEffect(() => {
+    const storedToken = localStorage.getItem('authToken');
+    if (storedToken) {
+      dispatch(setAuthToken(storedToken));
+    }
+  }, [dispatch]);
+
+  // Effect untuk redirect setelah login berhasil
+  useEffect(() => {
+    if (isAuthenticated && authStatus === 'succeeded' && authToken) {
+      navigate('/dashboard'); // Ganti dengan path dashboard Anda
+    }
+  }, [isAuthenticated, authStatus, authToken, navigate]);
+
   const handleSubmit = (e: React.FormEvent) => {
-    // Added type for event
     e.preventDefault();
-    console.log("Login attempt:", formData);
-    // Di sini Anda biasanya akan menangani logika login, misalnya, mengirim data ke backend
+    dispatch(loginWithEmailPassword(formData));
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Added type for event
+  // State for password visibility
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Handle Google Sign-In callback
+  const handleGoogleCallback = async (response: any) => {
+    try {
+      setIsGoogleLoading(true);
+      const id_token = response.credential;
+      
+      // Dispatch the loginWithGoogle thunk with the id_token
+      const result = await dispatch(loginWithGoogle(id_token));
+      
+      if (loginWithGoogle.fulfilled.match(result)) {
+        // Login successful - navigation will be handled by useEffect
+        console.log('Google login successful');
+      } else {
+        // Login failed
+        console.error('Google login failed:', result.payload);
+      }
+    } catch (error) {
+      console.error('Error during Google login:', error);
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = () => {
+    if (window.google) {
+      // Trigger Google Sign-In popup
+      window.google.accounts.id.prompt((notification: any) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          // Fallback to one-tap if popup is not displayed
+          console.log('Google Sign-In popup not displayed, trying alternative method');
+          
+          // Alternative: render Google Sign-In button
+          window.google.accounts.id.renderButton(
+            document.getElementById('google-signin-button'),
+            {
+              theme: 'outline',
+              size: 'large',
+              width: '300px',
+              text: 'signin_with',
+              shape: 'rectangular',
+            }
+          );
+        }
+      });
+    } else {
+      alert("Google Sign-In not loaded. Please try again.");
+    }
+  };
+
+  // Fungsi handleInputChange
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -191,19 +309,14 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans flex items-center justify-center">
-      {" "}
-      {/* Centering the content */}
       <div className="max-w-5xl w-full bg-white shadow-lg rounded-lg overflow-hidden flex flex-col lg:flex-row">
-        {" "}
-        {/* Added max-w-5xl, w-full, shadow, rounded, and overflow-hidden */}
         {/* Left Section - Form */}
         <div className="lg:w-1/2 flex flex-col justify-center p-8">
           {/* Logo Lost&Found */}
           <div className="mb-12">
             <div className="flex items-center">
               <Link to={"/"} className="flex items-center">
-                <Search className="h-6 w-6 text-[#1e40af] mr-2" />{" "}
-                {/* Icon for Lost&Found */}
+                <Search className="h-6 w-6 text-[#1e40af] mr-2" />
                 <span className="text-[#1e40af] font-bold text-xl">
                   Lost&Found
                 </span>
@@ -212,7 +325,6 @@ const App = () => {
           </div>
 
           <div className="w-full max-w-md mx-auto">
-            {/* Using Card components directly */}
             <Card className="rounded-xl shadow-lg border-none">
               <CardHeader className="text-center">
                 <CardTitle className="text-3xl font-bold text-gray-900">
@@ -252,7 +364,7 @@ const App = () => {
                         required
                         value={formData.password}
                         onChange={handleInputChange}
-                        className="rounded-md border border-gray-300 focus:border-[#1e40af] focus:ring-[#1e40af] pl-10"
+                        className="rounded-md border border-gray-300 focus:border-[#1e40af] focus:ring-[#1e40af] pl-10 pr-10"
                         placeholder="Enter your password"
                       />
                       <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -279,11 +391,18 @@ const App = () => {
                     </a>
                   </div>
 
+                  {authError && <p className="text-red-500 text-sm mb-4">{authError}</p>}
+
                   <Button
                     type="submit"
                     className="w-full bg-[#0A192F] hover:bg-[#1d4ed8] text-white rounded-md py-2 px-4 transition duration-300 ease-in-out shadow-md"
+                    disabled={authStatus === 'loading'}
                   >
-                    Sign In
+                    {authStatus === 'loading' ? (
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    ) : (
+                        'Sign In'
+                    )}
                   </Button>
                 </form>
 
@@ -301,19 +420,27 @@ const App = () => {
                     <Button
                       variant="outline"
                       className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 flex items-center justify-center rounded-md py-2 px-4 transition duration-300 ease-in-out shadow-sm"
+                      onClick={handleGoogleLogin}
+                      disabled={authStatus === 'loading' || isGoogleLoading}
                     >
-                      <img
-                        src="https://www.google.com/favicon.ico"
-                        alt="Google icon"
-                        className="w-5 h-5 mr-2"
-                      />
+                      {isGoogleLoading ? (
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      ) : (
+                        <img
+                          src="https://www.google.com/favicon.ico"
+                          alt="Google icon"
+                          className="w-5 h-5 mr-2"
+                        />
+                      )}
                       Continue with Google
                     </Button>
+                    
+                    {/* Hidden div for Google Sign-In button fallback */}
+                    <div id="google-signin-button" className="hidden"></div>
                   </div>
 
                   <p className="mt-6 text-sm text-gray-600">
                     Don't have an Account?{" "}
-                    {/* Using an anchor tag instead of Link for broader compatibility */}
                     <a
                       href="/register"
                       className="font-medium text-[#1e40af] hover:text-[#1d4ed8]"
@@ -326,13 +453,12 @@ const App = () => {
             </Card>
           </div>
         </div>
+        
         {/* Right Section - Promotional Content */}
         <div className="lg:w-1/2 bg-[#0A192F] text-white p-8 flex flex-col justify-center relative overflow-hidden">
-          {/* Background pattern/gradient - Meniru gambar */}
           <div
             className="absolute inset-0 z-0"
             style={{
-              // Enhanced radial gradient for a more prominent effect
               background:
                 "radial-gradient(circle at top left, rgba(30, 64, 175, 0.5), transparent 50%), radial-gradient(circle at bottom right, rgba(29, 78, 216, 0.5), transparent 50%)",
             }}
@@ -349,7 +475,7 @@ const App = () => {
             </blockquote>
             <div className="flex items-center justify-center lg:justify-start mb-12">
               <img
-                src="https://placehold.co/40x40/cccccc/ffffff?text=MC" // Placeholder for avatar, ganti ini nanti
+                src="https://placehold.co/40x40/cccccc/ffffff?text=MC"
                 alt="Michael Carter"
                 className="w-10 h-10 rounded-full mr-3"
               />
@@ -366,11 +492,9 @@ const App = () => {
                 Bergabunglah dengan Komunitas Kami
               </h3>
               <div className="flex flex-wrap justify-center lg:justify-start gap-4">
-                {/* Placeholder for community logos/icons */}
                 <span className="text-gray-400 text-sm">
                   Aplikasi ini membantu ribuan pengguna setiap hari!
                 </span>
-                {/* You could add actual icons/logos here if needed */}
                 <Compass className="h-6 w-6 text-white" />
                 <Search className="h-6 w-6 text-white" />
               </div>
@@ -382,4 +506,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Login;
